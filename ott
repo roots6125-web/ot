@@ -1,93 +1,95 @@
-//GRAPHICAL METHOD
+% Use Graphical method to solve linear Programming problem
+% Min Z = 3x1 -5x2 subject to x1 + x2 <= 6, 2x1 - x2 <= 9, x1,x2 >= 0
+%
 clc
 clear all
-clear figure
-%Phase 1 Input Parameters
-c = [3 -2 22];
-A = [1 -4; 1 8];
-b = [-29;77];
-%function dec
-z = @(x1,x2) 3*x1 - 2*x2 + 22;
-%definning constraints
-c1 = @(x1,x2) 1*x1 - 4*x2 + 29;
-c2 = @(x1,x2) 1*x1 + 8*x2 - 77;
-[m,n] = size(A)
-%Phase 2 Plotting only x axis and lines
-x1 = 0 : max(b./A(:,1));
-for i = 1 : m % m-> no. of constraints
-   x2 = (b(i)-A(i,1)*x1)/A(i,2);
-   %x2 = max(0,x22)
-   plot(x1,x2)
-   hold on;
+% Phase1 Input Parameter
+c = [3 2]; % Coefficients for the objective function
+A = [2 4; 3 5]; % Coefficients for the inequality constraints
+b = [8; 15]; % Right-hand side values for the constraints (always Column Vector)
+Z=@(x1,x2) 3*x1+2*x2;
+c1=@(x1,x2) 2*x1+4*x2-8;
+c2=@(x1,x2) 3*x1+5*x2-15;
+%c3=@(x1,x2) x1+2*x2-6;
+%m=size(A, 1);
+%n=size(A, 2);
+[m,n] = size(A);
+%Phase2 Plotting
+x1=0:max(b./A(:,1)) % inclusive both sides
+for i = 1 : m
+    x2 = (b(i) - A(i,1)*x1)/A(i,2)
+    plot(x1,x2)
+    hold on;
 end
-%Phase 3 Find intersection and corener points
-A = [A;eye(2)];
-b = [b;zeros(2,1)];
+%Phase3 All intersection and Corner Points
+A = [A; eye(2)];
+b = [b; zeros(2,1)];
 [m,n] = size(A);
 pt = [];
-for i=1:m
-   for j =i+1:m
-   aa = [A(i,:);A(j,:)];
-   bb = [b(i);b(j)];
-if(det(aa)~=0)
-   X = inv(aa)*bb
- 
-       pt=[pt X]
-   end
+for i = 1 : m
+    for j = i + 1 : m
+        aa = [A(i,:);A(j,:)];
+        bb = [b(i);b(j)];
+        if(det(aa) ~= 0)
+            X = inv(aa)*bb %aa\bb
+            if(X >= 0)
+                pt = [pt X]
+            end
+        end
+    end
 end
-   end
-%Phase 4 Find feasible points
-FP=[]; Z= [];
-% Check which points are feasible
-for i = 1:size(pt, 2)
-   pt1 = pt(1,i);
-   pt2 = pt(2,i);
-   if (c1(pt1, pt2) <= 0 && c2(pt1, pt2) <= 0 && pt1 >= 0 && pt2 >= 0)
-       FP = [FP pt(:, i)];
-       plot(pt1,pt2,'*r','MarkerSize',10)
-       cost = z(pt1,pt2);
-       Z = [Z cost];
-   end
+pt=unique(pt','rows')'
+%Phase4 Find Feasible Points
+FP=[];
+z=[];
+for i = 1 : size(pt, 2)
+    PT1 = pt(1, i);
+    PT2 = pt(2, i);
+    if(c1(PT1,PT2) >= 0 && c2(PT1,PT2) >= 0 )
+        FP = [FP pt(:, i)];
+        plot(PT1,PT2,'*r', 'MarkerSize', 10);
+        cost = Z(PT1,PT2);
+        z = [z cost];
+    end
 end
 disp('FP = ')
 disp(FP)
-disp('FZ = ')
+disp('Z = ')
 disp(Z)
-hold off;
-%Phase 5 To find optimal sol. ad optimal value
-[optimal_value,index] = max(Z)
-optimal_sol = FP(:,index)
-//BFS METHOD
+hold off
+%Phase5 Optimal Solution and Optimal Value
+[optimal_value,index]=min(z)
+optimal_sol=FP(:,index)
+
+%BFS
 clc
 clear all
 clear figure
 %Phase 1 Input Parameters
-C=[6 5 0 0]; %Objective Function
-A=[1 1 1 0; 3 2 0 1];
-b=[5;12];  %Column Vector
+C=[3 -5 0 0]; %Objective Function
+A=[1 1 1 0; 2 -1 0 -1];
+b=[6;9];  %Column Vector
 z=@(x) C*x;
-m=size(A,1) %No. of constraints in Standard Form
-n=size(A,2) %No. of Variables in Standard Form
+m=size(A,1); %No. of constraints in Standard Form
+n=size(A,2); %No. of Variables in Standard Form
 %Phase 2 Find Basic Solution Set and Basic Set
 basicsol=[];
 bfsol=[];
 ncm=nchoosek(n,m);
 pair=nchoosek(1:n,m);
 for i=1 : ncm
-   basicvar_index=pair(i,:);
-   y=zeros(n,1);
-   X=A(:,basicvar_index)\b;
-   y(basicvar_index) = X;
-   basicsol=[basicsol y];
-   if(X >= 0)
-       bfsol=[bfsol y];
-   end
+    basicvar_index=pair(i,:);
+    y=zeros(n,1);
+    X=A(:,basicvar_index)\b;
+    y(basicvar_index) = X;
+    basicsol=[basicsol y];
+    if(X >= 0)
+        bfsol=[bfsol y]; 
+    end
 end
 basicsol
 bfsol
-%Phase 3 optimal sol. and optimal value
-cost = z(bfsol)
-[opt_val index] = max(cost)
-opt_sol = bfsol(:,index)
- 
- 
+%Phase3 optimal Solution & optimal Value
+Cost=z(bfsol);
+[opt_val index]= min(Cost)
+opt_Sol = bfsol(:, index)

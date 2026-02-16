@@ -1,0 +1,134 @@
+clc
+clear all
+close all
+
+% Phase 1 – Input
+c = [3 2];   % Objective coefficients
+
+A = [2 4;
+    -3 -5];  % Converted constraints
+
+b = [8;
+    -15];
+
+% Objective function
+z = @(x1,x2) 3*x1 + 2*x2;
+
+% Constraint functions
+c1 = @(x1,x2) 2*x1 + 4*x2 - 8;
+c2 = @(x1,x2) -3*x1 -5*x2 + 15;
+
+[m,n] = size(A);
+
+% Phase 2 – Plotting
+x1 = 0:max(b./A(:,1));
+
+for i = 1:m
+    x2 = (b(i) - A(i,1)*x1)/A(i,2);
+    plot(x1,x2,'LineWidth',2)
+    hold on
+end
+
+xlabel('x1')
+ylabel('x2')
+grid on
+
+% Phase 3 – Intersection points
+A_ext = [A; eye(2)];
+b_ext = [b; 0; 0];
+
+[m_ext,n_ext] = size(A_ext);
+
+pt = [];
+
+for i=1:m_ext
+    for j=i+1:m_ext
+        aa = [A_ext(i,:); A_ext(j,:)];
+        bb = [b_ext(i); b_ext(j)];
+        
+        if det(aa) ~= 0
+            X = aa\bb;
+            pt = [pt X];
+        end
+    end
+end
+
+% Phase 4 – Feasible points
+FP=[];
+Z=[];
+
+for i = 1:size(pt,2)
+    pt1 = pt(1,i);
+    pt2 = pt(2,i);
+    
+    if (c1(pt1,pt2)<=0 && c2(pt1,pt2)<=0 && pt1>=0 && pt2>=0)
+        
+        FP = [FP pt(:,i)];
+        plot(pt1,pt2,'*r','MarkerSize',10)
+        cost = z(pt1,pt2);
+        Z = [Z cost];
+    end
+end
+
+disp('Feasible Points:')
+disp(FP)
+
+disp('Objective values:')
+disp(Z)
+
+% MAX
+[max_val,max_index] = max(Z);
+max_solution = FP(:,max_index)
+
+% MIN
+[min_val,min_index] = min(Z);
+min_solution = FP(:,min_index)
+
+
+
+//bfs
+clc
+clear all
+
+C=[6 5 0 0];
+
+A=[1 1 1 0;
+   3 2 0 1];
+
+b=[5;12];
+
+m=size(A,1);
+n=size(A,2);
+
+basicsol=[];
+bfsol=[];
+
+pair=nchoosek(1:n,m);
+
+for i=1:size(pair,1)
+    
+   basicvar_index=pair(i,:);
+   
+   y=zeros(n,1);
+   
+   X=A(:,basicvar_index)\b;
+   
+   y(basicvar_index)=X;
+   
+   basicsol=[basicsol y];
+   
+   if all(X>=0)
+       bfsol=[bfsol y];
+   end
+end
+
+disp('Basic Feasible Solutions:')
+disp(bfsol)
+
+if isempty(bfsol)
+    disp('No Basic Feasible Solution exists')
+else
+    cost = C * bfsol;
+    [opt_val,index] = max(cost);
+    opt_sol = bfsol(:,index)
+end

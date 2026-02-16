@@ -1,16 +1,16 @@
 //GRAPHICAL METHOD
 clc
 clear all
+clear figure
 %Phase 1 Input Parameters
-c = [3 4];
-A = [1 1; 2 1;1 2];
-b = [10; 15; 16];
+c = [3 -2 22];
+A = [1 -4; 1 8];
+b = [-29;77];
 %function dec
-z = @(x1,x2) 3*x1 + 4*x2;
+z = @(x1,x2) 3*x1 - 2*x2 + 22;
 %definning constraints
-c1 = @(x1,x2) 1*x1 + 1*x2 - 10;
-c2 = @(x1,x2) 2*x1 + 1*x2 - 15;
-c3 = @(x1,x2) 1*x1 + 2*x2 - 16;
+c1 = @(x1,x2) 1*x1 - 4*x2 + 29;
+c2 = @(x1,x2) 1*x1 + 8*x2 - 77;
 [m,n] = size(A)
 %Phase 2 Plotting only x axis and lines
 x1 = 0 : max(b./A(:,1));
@@ -38,12 +38,11 @@ end
    end
 %Phase 4 Find feasible points
 FP=[]; Z= [];
-hold on
 % Check which points are feasible
 for i = 1:size(pt, 2)
    pt1 = pt(1,i);
    pt2 = pt(2,i);
-   if (c1(pt1, pt2) <= 0 && c2(pt1, pt2) <= 0 && c3(pt1, pt2) <= 0&& pt1 >= 0 && pt2 >= 0 && pt1 <= 7 && pt2 <= 7)
+   if (c1(pt1, pt2) <= 0 && c2(pt1, pt2) <= 0 && pt1 >= 0 && pt2 >= 0)
        FP = [FP pt(:, i)];
        plot(pt1,pt2,'*r','MarkerSize',10)
        cost = z(pt1,pt2);
@@ -54,10 +53,10 @@ disp('FP = ')
 disp(FP)
 disp('FZ = ')
 disp(Z)
+hold off;
 %Phase 5 To find optimal sol. ad optimal value
 [optimal_value,index] = max(Z)
 optimal_sol = FP(:,index)
- 
 //BFS METHOD
 clc
 clear all

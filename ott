@@ -70,8 +70,7 @@ C=[3 -5 0 0]; %Objective Function
 A=[1 1 1 0; 2 -1 0 -1];
 b=[6;9];  %Column Vector
 z=@(x) C*x;
-m=size(A,1); %No. of constraints in Standard Form
-n=size(A,2); %No. of Variables in Standard Form
+[m,n]=size(A); %No. of constraints and variables in Standard Form
 %Phase 2 Find Basic Solution Set and Basic Set
 basicsol=[];
 bfsol=[];

@@ -1,0 +1,94 @@
+//GRAPHICAL METHOD
+clc
+clear all
+%Phase 1 Input Parameters
+c = [3 4];
+A = [1 1; 2 1;1 2];
+b = [10; 15; 16];
+%function dec
+z = @(x1,x2) 3*x1 + 4*x2;
+%definning constraints
+c1 = @(x1,x2) 1*x1 + 1*x2 - 10;
+c2 = @(x1,x2) 2*x1 + 1*x2 - 15;
+c3 = @(x1,x2) 1*x1 + 2*x2 - 16;
+[m,n] = size(A)
+%Phase 2 Plotting only x axis and lines
+x1 = 0 : max(b./A(:,1));
+for i = 1 : m % m-> no. of constraints
+   x2 = (b(i)-A(i,1)*x1)/A(i,2);
+   %x2 = max(0,x22)
+   plot(x1,x2)
+   hold on;
+end
+%Phase 3 Find intersection and corener points
+A = [A;eye(2)];
+b = [b;zeros(2,1)];
+[m,n] = size(A);
+pt = [];
+for i=1:m
+   for j =i+1:m
+   aa = [A(i,:);A(j,:)];
+   bb = [b(i);b(j)];
+if(det(aa)~=0)
+   X = inv(aa)*bb
+ 
+       pt=[pt X]
+   end
+end
+   end
+%Phase 4 Find feasible points
+FP=[]; Z= [];
+hold on
+% Check which points are feasible
+for i = 1:size(pt, 2)
+   pt1 = pt(1,i);
+   pt2 = pt(2,i);
+   if (c1(pt1, pt2) <= 0 && c2(pt1, pt2) <= 0 && c3(pt1, pt2) <= 0&& pt1 >= 0 && pt2 >= 0 && pt1 <= 7 && pt2 <= 7)
+       FP = [FP pt(:, i)];
+       plot(pt1,pt2,'*r','MarkerSize',10)
+       cost = z(pt1,pt2);
+       Z = [Z cost];
+   end
+end
+disp('FP = ')
+disp(FP)
+disp('FZ = ')
+disp(Z)
+%Phase 5 To find optimal sol. ad optimal value
+[optimal_value,index] = max(Z)
+optimal_sol = FP(:,index)
+ 
+//BFS METHOD
+clc
+clear all
+clear figure
+%Phase 1 Input Parameters
+C=[6 5 0 0]; %Objective Function
+A=[1 1 1 0; 3 2 0 1];
+b=[5;12];  %Column Vector
+z=@(x) C*x;
+m=size(A,1) %No. of constraints in Standard Form
+n=size(A,2) %No. of Variables in Standard Form
+%Phase 2 Find Basic Solution Set and Basic Set
+basicsol=[];
+bfsol=[];
+ncm=nchoosek(n,m);
+pair=nchoosek(1:n,m);
+for i=1 : ncm
+   basicvar_index=pair(i,:);
+   y=zeros(n,1);
+   X=A(:,basicvar_index)\b;
+   y(basicvar_index) = X;
+   basicsol=[basicsol y];
+   if(X >= 0)
+       bfsol=[bfsol y];
+   end
+end
+basicsol
+bfsol
+%Phase 3 optimal sol. and optimal value
+cost = z(bfsol)
+[opt_val index] = max(cost)
+opt_sol = bfsol(:,index)
+ 
+ 

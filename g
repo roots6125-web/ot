@@ -74,3 +74,37 @@ hold off
 %Phase5 Optimal Solution and Optimal Value
 [optimal_value,index]=max(z)
 optimal_sol=FP(:,index)
+
+
+
+%BFS
+clc
+clear all
+clear figure
+%Phase 1 Input Parameters
+C=[3 -5 0 0]; %Objective Function
+A=[1 1 1 0; 2 -1 0 -1];
+b=[6;9];  %Column Vector
+z=@(x) C*x;
+[m,n]=size(A); %No. of constraints and variables in Standard Form
+%Phase 2 Find Basic Solution Set and Basic Set
+basicsol=[];
+bfsol=[];
+ncm=nchoosek(n,m);
+pair=nchoosek(1:n,m);
+for i=1 : ncm
+    basicvar_index=pair(i,:);
+    y=zeros(n,1);
+    X=A(:,basicvar_index)\b;
+    y(basicvar_index) = X;
+    basicsol=[basicsol y];
+    if(X >= 0)
+        bfsol=[bfsol y]; 
+    end
+end
+basicsol
+bfsol
+%Phase3 optimal Solution & optimal Value
+Cost=z(bfsol);
+[opt_val index]= min(Cost)
+opt_Sol = bfsol(:, index)

@@ -59,7 +59,7 @@ z=[];
 for i = 1 : size(pt, 2)
     PT1 = pt(1, i);
     PT2 = pt(2, i);
-    if(c1(PT1,PT2) >= 0 && c2(PT1,PT2) >= 0 && c3(PT1,PT2) >= 0 && c4(PT1,PT2) >= 0)
+    if(c1(PT1,PT2) <= 0 && c2(PT1,PT2) <= 0 && c3(PT1,PT2) <= 0 && c4(PT1,PT2) <= 0)
         FP = [FP pt(:, i)];
         plot(PT1,PT2,'*r', 'MarkerSize', 10);
         cost = Z(PT1,PT2);
